@@ -27,6 +27,12 @@ describe("Collateral_Vault", () => {
   const program = anchor.workspace.collateralVault as Program<CollateralVault>;
   const user = provider.wallet;
 
+  const [vaultAuthorityPda, vaultAuthorityBump] =
+  PublicKey.findProgramAddressSync(
+    [Buffer.from("vault_authority")],
+    program.programId
+  );
+
   it("Is initialized!", async () => {
 
     const [vaultPda, vaultBump] = PublicKey.findProgramAddressSync(
@@ -156,6 +162,41 @@ describe("Collateral_Vault", () => {
       expect(updatedVault.totalDeposited.toNumber()).to.equal(500_000);
 
   });
+
+  it("inintializes vault authority", async () => {
+
+    await program.methods.initializeVaultAuthority(vaultAuthorityBump).accounts({
+      vaultAuthority: vaultAuthorityPda,
+      payer: user.publicKey,
+      systemProgram: SystemProgram.programId
+    }).rpc();
+
+    const authority = await program.account.vaultAuthority.fetch(
+      vaultAuthorityPda
+    );
+
+    expect(authority.admin.toBase58()).to.equal(
+      user.publicKey.toBase58()
+    );
+
+    expect(authority.authorizedPrograms.length).to.equal(0);
+
+  });
+
+  it("adds authorized programs", async () => {
+    await program.methods.addAuthorizedProgram(program.programId).accounts({
+      vaultAuthority: vaultAuthorityPda,
+      admin: user.publicKey
+    }).rpc();
+
+    const authority = await program.account.vaultAuthority.fetch(
+      vaultAuthorityPda
+    );
+
+    expect(
+      authority.authorizedPrograms[0].toBase58()
+    ).to.equal(program.programId.toBase58());
+  })
 
   it("locks collateral", async () => {
 
