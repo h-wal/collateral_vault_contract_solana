@@ -47,4 +47,8 @@ pub mod collateral_vault {
     ) -> Result<()> {
         ctx.accounts.add(program_id)
     }
+
+    pub fn transfer_collateral(ctx: Context<TransferCollateral>, amount: u64) -> Result<()> {
+        ctx.accounts.transfer(amount)
+    }
 }

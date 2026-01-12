@@ -1,6 +1,11 @@
 use crate::states::VaultAuthority;
 use anchor_lang::prelude::*;
 
+#[event]
+pub struct VaultAuthorityInitialized {
+    pub admin: Pubkey,
+}
+
 #[derive(Accounts)]
 #[instruction(bump: u8)]
 pub struct InitializeVaultAuthority<'info> {
@@ -24,6 +29,11 @@ impl<'info> InitializeVaultAuthority<'info> {
         self.vault_authority.admin = self.payer.key();
         self.vault_authority.authorized_programs = vec![];
         self.vault_authority.bump = bump;
+
+        emit!(VaultAuthorityInitialized {
+            admin: self.payer.key(),
+        });
+
         Ok(())
     }
 }

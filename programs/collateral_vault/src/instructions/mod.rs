@@ -13,10 +13,8 @@ pub use unlock_collateral::*;
 pub mod withdraw;
 pub use withdraw::*;
 
-pub mod initialize_vault_authority;
-pub use initialize_vault_authority::*;
+pub mod vault_authority;
+pub use vault_authority::*;
 
-pub mod add_authorized_program;
-pub use add_authorized_program::*;
-
-
+pub mod transfer_collateral;
+pub use transfer_collateral::*;

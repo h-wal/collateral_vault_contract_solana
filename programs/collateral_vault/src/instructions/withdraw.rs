@@ -5,6 +5,13 @@ use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, Tran
 use crate::errors::VaultError;
 use crate::states::CollateralVault;
 
+#[event]
+pub struct CollateralWithdrawn {
+    pub vault: Pubkey,
+    pub user: Pubkey,
+    pub amount: u64,
+}
+
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
     #[account(mut)]
@@ -81,6 +88,12 @@ impl<'info> Withdraw<'info> {
             .total_withdrawn
             .checked_add(amount)
             .ok_or(VaultError::MathOverflow)?;
+
+        emit!(CollateralWithdrawn {
+            vault: self.vault.key(),
+            user: self.user.key(),
+            amount,
+        });
 
         Ok(())
     }

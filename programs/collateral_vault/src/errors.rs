@@ -25,4 +25,10 @@ pub enum VaultError {
 
     #[msg("Unauthorized Admin")]
     UnauthorizedAdmin,
+
+    #[msg("Mint Mismatch")]
+    MintMismatch,
+
+    #[msg("Invalid Transfer")]
+    InvalidTransfer,
 }

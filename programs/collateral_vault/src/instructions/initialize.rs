@@ -5,6 +5,14 @@ use anchor_spl::associated_token::AssociatedToken;
 //use crate::constants::USDC_MINT;
 use crate::states::CollateralVault;
 
+#[event]
+pub struct VaultInitialized {
+    pub owner: Pubkey,
+    pub vault: Pubkey,
+    pub mint: Pubkey,
+    pub timestamp: i64,
+}
+
 #[derive(Accounts)]
 #[instruction(vault_bump: u8)]
 pub struct InitializeVault<'info> {
@@ -57,6 +65,13 @@ impl<'info> InitializeVault<'info> {
         vault.created_at = Clock::get()?.unix_timestamp;
         vault.bump = vault_bump;
         vault.mint = self.mint.key();
+
+        emit!(VaultInitialized {
+            owner: self.user.key(),
+            vault: self.vault.key(),
+            mint: self.mint.key(),
+            timestamp: Clock::get()?.unix_timestamp,
+        });
 
         Ok(())
     }

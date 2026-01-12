@@ -3,6 +3,12 @@ use anchor_lang::prelude::*;
 use crate::errors::VaultError;
 use crate::states::{CollateralVault, VaultAuthority};
 
+#[event]
+pub struct CollateralLocked {
+    pub vault: Pubkey,
+    pub amount: u64,
+}
+
 #[derive(Accounts)]
 
 pub struct LockCollateral<'info> {
@@ -50,6 +56,11 @@ impl<'info> LockCollateral<'info> {
             .locked_balance
             .checked_add(amount)
             .ok_or(VaultError::MathOverflow)?;
+
+        emit!(CollateralLocked {
+            vault: self.vault.key(),
+            amount,
+        });
 
         Ok(())
     }

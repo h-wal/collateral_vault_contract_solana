@@ -236,4 +236,98 @@ describe("Collateral_Vault", () => {
 
   })
 
+  it("unlocks collateral", async () => {
+
+    const [vaultPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("vault"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const before = await program.account.collateralVault.fetch(vaultPda);
+
+    const unlockAmount = 200_000;
+
+    await program.methods.unlockCollateral(
+      new anchor.BN(unlockAmount)
+    ).accounts({
+      callerProgram: program.programId,
+      vault: vaultPda,
+      vaultAuthority: vaultAuthorityPda,
+    }).rpc();
+
+    const after = await program.account.collateralVault.fetch(vaultPda);
+
+    expect(after.lockedBalance.toNumber()).to.equal(
+      before.lockedBalance.toNumber() - unlockAmount
+    );
+
+    expect(after.availableBalance.toNumber()).to.equal(
+      before.availableBalance.toNumber() + unlockAmount
+    );
+
+    expect(after.totalBalance.toNumber()).to.equal(
+      before.totalBalance.toNumber()
+    );
+
+  })
+
+  it("withdraws funds", async () => {
+
+    const [vaultPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("vault"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const vault = await program.account.collateralVault.fetch(vaultPda);
+
+    const vaultTokenAccount = vault.tokenAccount;
+    const mint = vault.mint;
+
+    const userTokenAccount = getAssociatedTokenAddressSync(
+      mint,
+      user.publicKey,
+      false,
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const withdrawAmount = 100_000;
+
+    const beforeVault = await program.account.collateralVault.fetch(vaultPda);
+
+    const beforeBalance = await provider.connection.getTokenAccountBalance(
+      userTokenAccount
+    );
+
+    await program.methods.withdraw(new anchor.BN(withdrawAmount)).accounts({
+      user: user.publicKey,
+      vault: vaultPda,
+      vaultTokenAccount,
+      userTokenAccount,
+      mintAccount: mint,
+      tokenProgram: TOKEN_2022_PROGRAM_ID
+    }).rpc()
+
+    const afterVault = await program.account.collateralVault.fetch(vaultPda);
+
+    const afterBalance = await provider.connection.getTokenAccountBalance(
+      userTokenAccount
+    );
+
+    expect(
+      Number(afterBalance.value.amount) - Number(beforeBalance.value.amount)
+    ).to.equal(withdrawAmount);
+
+    expect(afterVault.availableBalance.toNumber()).to.equal(
+      beforeVault.availableBalance.toNumber() - withdrawAmount
+    );
+
+    expect(afterVault.totalBalance.toNumber()).to.equal(
+      beforeVault.totalBalance.toNumber() - withdrawAmount
+    );
+
+    expect(afterVault.totalWithdrawn.toNumber()).to.equal(
+      beforeVault.totalWithdrawn.toNumber() + withdrawAmount
+    );
+
+  })
 });

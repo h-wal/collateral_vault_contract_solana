@@ -2,6 +2,11 @@ use crate::errors::VaultError;
 use crate::states::VaultAuthority;
 use anchor_lang::prelude::*;
 
+#[event]
+pub struct ProgramAuthorized {
+    pub program_id: Pubkey,
+}
+
 #[derive(Accounts)]
 pub struct AddAuthorizedPrograms<'info> {
     #[account(
@@ -30,6 +35,8 @@ impl<'info> AddAuthorizedPrograms<'info> {
         );
 
         self.vault_authority.authorized_programs.push(program_id);
+
+        emit!(ProgramAuthorized { program_id });
 
         Ok(())
     }
