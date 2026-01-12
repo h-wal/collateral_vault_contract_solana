@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 pub mod constants;
 pub mod errors;
 pub mod instructions;
-pub mod state;
+pub mod states;
 
 pub use instructions::*;
 
@@ -20,5 +20,9 @@ pub mod collateral_vault {
 
     pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
         ctx.accounts.deposit(amount)
+    }
+
+    pub fn lock_collateral(ctx: Context<LockCollateral>, amount: u64) -> Result<()> {
+        ctx.accounts.lock(amount)
     }
 }

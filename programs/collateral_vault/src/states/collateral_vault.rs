@@ -21,3 +21,5 @@ pub struct CollateralVault {
 impl CollateralVault {
     pub const INIT_SPACE: usize = 32 + 32 + 8 + 8 + 8 + 8 + 8 + 8 + 1 + 32;
 }
+
+

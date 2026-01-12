@@ -3,7 +3,7 @@ use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use anchor_spl::associated_token::AssociatedToken;
 
 //use crate::constants::USDC_MINT;
-use crate::state::CollateralVault;
+use crate::states::CollateralVault;
 
 #[derive(Accounts)]
 #[instruction(vault_bump: u8)]

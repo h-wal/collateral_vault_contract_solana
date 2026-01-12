@@ -4,7 +4,7 @@ use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, Tran
 
 use crate::errors::VaultError;
 
-use crate::state::CollateralVault;
+use crate::states::CollateralVault;
 
 #[event]
 pub struct DepositEvent {

@@ -11,4 +11,9 @@ pub enum VaultError {
     #[msg("Arithmetic overflow")]
     MathOverflow,
 
+    #[msg("Unauthorized Caller")]
+    UnauthorizedCaller,
+
+    #[msg("Insufficient Available Balance")]
+    InsufficientAvailableBalance
 }
