@@ -29,4 +29,22 @@ pub mod collateral_vault {
     pub fn unlock_collateral(ctx: Context<UnlockCollateral>, amount: u64) -> Result<()> {
         ctx.accounts.unlock(amount)
     }
+
+    pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+        ctx.accounts.withdraw(amount)
+    }
+
+    pub fn initialize_vault_authority(
+        ctx: Context<InitializeVaultAuthority>,
+        bump: u8,
+    ) -> Result<()> {
+        ctx.accounts.initialize(bump)
+    }
+
+    pub fn add_authorized_program(
+        ctx: Context<AddAuthorizedPrograms>,
+        program_id: Pubkey,
+    ) -> Result<()> {
+        ctx.accounts.add(program_id)
+    }
 }

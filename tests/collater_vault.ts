@@ -4,7 +4,7 @@ import {
   PublicKey, 
   SystemProgram
 } from "@solana/web3.js"
-import { expect } from "chai";
+import { expect, use } from "chai";
 import {
   createMint,
   getAssociatedTokenAddressSync,
@@ -156,5 +156,43 @@ describe("Collateral_Vault", () => {
       expect(updatedVault.totalDeposited.toNumber()).to.equal(500_000);
 
   });
+
+  it("locks collateral", async () => {
+
+    const [vaultPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("vault"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const vaultAccountBefore = await program.account.collateralVault.fetch(vaultPda);
+
+    const lockAmount = 400_000;
+
+    const [vaultAuthorityPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("vault_authority")],
+      program.programId
+    );
+
+    await program.methods.lockCollateral(new anchor.BN(lockAmount)).accounts({
+      callerProgram: program.programId,
+      vault: vaultPda,
+      vaultAuthority: vaultAuthorityPda,
+    }).rpc();
+
+    const vaultAccountAfter = await program.account.collateralVault.fetch(vaultPda);
+
+    expect(vaultAccountAfter.lockedBalance.toNumber()).to.equal(
+      vaultAccountBefore.lockedBalance.toNumber() + lockAmount
+    );
+
+    expect(vaultAccountAfter.availableBalance.toNumber()).to.equal(
+      vaultAccountBefore.availableBalance.toNumber() - lockAmount
+    );
+
+    expect(vaultAccountAfter.totalBalance.toNumber()).to.equal(
+      vaultAccountBefore.totalBalance.toNumber()
+    );
+
+  })
 
 });

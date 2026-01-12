@@ -19,4 +19,10 @@ pub enum VaultError {
 
     #[msg("Insufficient Locked Balance")]
     InsufficientLockedBalance,
+
+    #[msg("Program Already Authorized")]
+    ProgramAlreadyAuthorized,
+
+    #[msg("Unauthorized Admin")]
+    UnauthorizedAdmin,
 }
