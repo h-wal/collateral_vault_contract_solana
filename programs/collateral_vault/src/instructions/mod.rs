@@ -7,3 +7,5 @@ pub use deposit::*;
 pub mod lock_collateral;
 pub use lock_collateral::*;
 
+pub mod unlock_collateral;
+pub use unlock_collateral::*;

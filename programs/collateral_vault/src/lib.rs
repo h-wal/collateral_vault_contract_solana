@@ -25,4 +25,8 @@ pub mod collateral_vault {
     pub fn lock_collateral(ctx: Context<LockCollateral>, amount: u64) -> Result<()> {
         ctx.accounts.lock(amount)
     }
+
+    pub fn unlock_collateral(ctx: Context<UnlockCollateral>, amount: u64) -> Result<()> {
+        ctx.accounts.unlock(amount)
+    }
 }

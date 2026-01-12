@@ -15,5 +15,8 @@ pub enum VaultError {
     UnauthorizedCaller,
 
     #[msg("Insufficient Available Balance")]
-    InsufficientAvailableBalance
+    InsufficientAvailableBalance,
+
+    #[msg("Insufficient Locked Balance")]
+    InsufficientLockedBalance,
 }
